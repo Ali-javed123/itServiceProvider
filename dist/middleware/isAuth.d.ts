@@ -1,11 +1,9 @@
-import type { Request, NextFunction, Response } from "express";
-export interface User extends Document {
-    _id: number;
-    nama: string;
-    email: string;
-}
+import type { Request, Response, NextFunction } from "express";
 export interface AuthenticationRequest extends Request {
-    user?: User | null;
+    user?: {
+        id: string;
+        email: string;
+    };
 }
-export declare const isAuth: (req: AuthenticationRequest | any, res: Response, next: NextFunction) => Promise<void>;
+export declare const isAuth: (req: AuthenticationRequest, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
 //# sourceMappingURL=isAuth.d.ts.map

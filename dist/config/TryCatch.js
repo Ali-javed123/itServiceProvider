@@ -4,8 +4,10 @@ export const TryCatch = (handler) => {
             await handler(req, res, next);
         }
         catch (error) {
-            res.json({
-                message: error.message,
+            console.error(error);
+            res.status(500).json({
+                success: false,
+                message: error.message || "Internal Server Error",
             });
         }
     };

@@ -1,3 +1,2 @@
-import type { Request, Response } from "express";
-export declare const Register: (req: Request, res: Response, next: any) => Promise<void>;
+export declare const Register: import("express").RequestHandler<import("express-serve-static-core").ParamsDictionary, any, any, import("qs").ParsedQs, Record<string, any>>;
 //# sourceMappingURL=register.d.ts.map

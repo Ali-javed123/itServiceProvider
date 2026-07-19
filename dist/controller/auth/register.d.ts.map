@@ -1,1 +1,1 @@
-{"version":3,"file":"register.d.ts","sourceRoot":"","sources":["../../../src/controller/auth/register.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AASjD,eAAO,MAAM,QAAQ,2DAuEpB,CAAC"}
+{"version":3,"file":"register.d.ts","sourceRoot":"","sources":["../../../src/controller/auth/register.ts"],"names":[],"mappings":"AASA,eAAO,MAAM,QAAQ,8IAuEpB,CAAC"}

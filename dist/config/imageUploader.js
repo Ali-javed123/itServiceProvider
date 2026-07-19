@@ -19,4 +19,7 @@ export const uploadImage = async (file) => {
             .pipe(stream);
     });
 };
+export const deleteImage = async (public_id) => {
+    await cloudinary.uploader.destroy(public_id);
+};
 //# sourceMappingURL=imageUploader.js.map
