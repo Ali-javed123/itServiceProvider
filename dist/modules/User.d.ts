@@ -12,7 +12,7 @@ export interface isUser extends Document {
     gender: "male" | "female";
 }
 export declare const User: Schema<isUser>;
-export declare const UserModel: mongoose.Model<isUser, {}, {}, {}, mongoose.Document<unknown, {}, isUser, {}, mongoose.DefaultSchemaOptions> & isUser & Required<{
+export declare const UserModel: mongoose.Model<isUser, {}, {}, {}, Document<unknown, {}, isUser, {}, mongoose.DefaultSchemaOptions> & isUser & Required<{
     _id: mongoose.Types.ObjectId;
 }> & {
     __v: number;
