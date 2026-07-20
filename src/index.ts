@@ -25,16 +25,19 @@ app.use(cors({
 app.use("/api/v1/auth", UserRoutes);
 app.use("/api/v1", ServiceRouter);
 
-const startServer = async () => {
-    try {
-        await ConnectDB();
+// const startServer = async () => {
+//     try {
+//         await ConnectDB();
 
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    } catch (error) {
-        console.error(error);
-    }
-};
+//         app.listen(PORT, () => {
+//             console.log(`Server running on port ${PORT}`);
+//         });
+//     } catch (error) {
+//         console.error(error);
+//     }
+// };
 
 // startServer();
+
+
+export default app;
