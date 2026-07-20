@@ -26,7 +26,7 @@ app.use("/api/v1/auth", UserRoutes);
 app.use("/api/v1", ServiceRouter);
 ConnectDB().catch(console.error);
 app.get("/", (req, res) => {
-  res.json({ message: "API is running" });
+  res.json({ message: "API is running," });
 });
 
 // const startServer = async () => {
