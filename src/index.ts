@@ -20,7 +20,7 @@ app.use(cors());
 ConnectDB().catch(console.error);
 
 app.get("/", (req, res) => {
-  res.json({ message: "API is running" });
+  res.json({ message: "API is running..." });
 });
 
 app.use("/api/v1/auth", UserRoutes);
