@@ -28,6 +28,16 @@ export const createService = async (req, res) => {
             });
             return;
         }
+        const titleExists = await Service.findOne({
+            title: title.trim(),
+        });
+        if (titleExists) {
+            res.status(400).json({
+                success: false,
+                message: "Service  already exists.",
+            });
+            return;
+        }
         // ==========================
         // ObjectId Validation
         // ==========================
@@ -205,6 +215,13 @@ export const updateService = async (req, res) => {
 export const deleteService = async (req, res) => {
     try {
         const { id } = req.params;
+        if (!id) {
+            res.status(400).json({
+                success: false,
+                message: "Service id is required.",
+            });
+            return;
+        }
         // Validate ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             res.status(400).json({

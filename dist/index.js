@@ -1,36 +1,24 @@
 import dotenv from "dotenv";
 import express from "express";
 import dns from "dns";
+import cors from "cors";
 import ConnectDB from "./config/db.js";
 import { UserRoutes } from "./routes/auth.routes.js";
 import ServiceRouter from "./routes/service.routes.js";
-import cors from 'cors';
 dotenv.config();
-const app = express();
-const PORT = process.env.PORT || 8080;
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
+const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-    origin: "*",
-    credentials: true,
-}));
-app.use("/api/v1/auth", UserRoutes);
-app.use("/api/v1", ServiceRouter);
+app.use(cors());
 ConnectDB().catch(console.error);
 app.get("/", (req, res) => {
-    res.json({ message: "API is running," });
+    res.json({ message: "API is running..." });
 });
-// const startServer = async () => {
-//     try {
-//         await ConnectDB();
-//         app.listen(PORT, () => {
-//             console.log(`Server running on port ${PORT}`);
-//         });
-//     } catch (error) {
-//         console.error(error);
-//     }
-// };
-// startServer();
-export default app;
+app.use("/api/v1/auth", UserRoutes);
+app.use("/api/v1", ServiceRouter);
+app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
+});
+// export default app;
 //# sourceMappingURL=index.js.map

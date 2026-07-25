@@ -8,7 +8,7 @@ import { isAuth } from "../middleware/isAuth.js";
 UserRouter.post("/register", upload.single("image"), Register);
 UserRouter.post("/login", Login);
 UserRouter.post("/verify-otp", VerifyLoginOtp);
-UserRouter.post("/resend-otp", VerifyOtp);
+UserRouter.post("/resend-otp", ResendOtp);
 UserRouter.get("/profile/:id", profileGet);
 UserRouter.put("/profile/:id", isAuth, // 1st - Authenticate first
 upload.single("image"), // 2nd - Handle file upload

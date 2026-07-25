@@ -73,53 +73,55 @@ export const VerifyOtp = TryCatch(async (req, res) => {
     });
 });
 export const ResendOtp = TryCatch(async (req, res) => {
-    const { otp_verificationId } = req.body;
-    if (!otp_verificationId) {
+    const { verificationId } = req.body;
+    // Validation
+    if (!verificationId) {
         return res.status(400).json({
             success: false,
             message: "verificationId is required.",
         });
     }
-    // 1. Verify karein ke yeh token valid hai
+    // Verify JWT
     let decoded;
     try {
-        decoded = jwt.verify(otp_verificationId, process.env.JWT_SECRET);
+        decoded = jwt.verify(verificationId, process.env.JWT_SECRET);
     }
-    catch (err) {
+    catch (error) {
         return res.status(401).json({
             success: false,
             message: "Session expired. Please login again.",
         });
     }
     const email = decoded.email;
-    // 2. Cooldown Check (30 Seconds)
+    // Cooldown
     const cooldownKey = `otp_cooldown:${email}`;
     const lastSentTime = await RedisService.get(cooldownKey);
     if (lastSentTime) {
         const currentTime = Math.floor(Date.now() / 1000);
-        const timePassed = currentTime - parseInt(lastSentTime);
-        const waitTime = 30; // 30 seconds
-        if (timePassed < waitTime) {
+        const lastTime = Number(lastSentTime);
+        const waitTime = 30;
+        if (currentTime - lastTime < waitTime) {
             return res.status(429).json({
                 success: false,
-                message: `Please wait ${waitTime - timePassed} seconds before requesting a new OTP.`,
+                message: `Please wait ${waitTime - (currentTime - lastTime)} seconds before requesting a new OTP.`,
             });
         }
     }
-    // 3. Naya Cooldown set karein (60 seconds TTL)
+    // Save cooldown
     await RedisService.set(cooldownKey, Math.floor(Date.now() / 1000).toString(), 60);
-    // 4. Naya OTP generate aur store karein
+    // Generate new OTP
     const otp = generateOTP();
-    // ✅ FIX 2: Yahan 'await' lagana zaroori hai kyunki storeOTP ek Promise return karta hai
     await storeOTP(email, otp);
-    // 5. Email dubara bhejein
+    // Send email
     await publishEmail({
         to: email,
         subject: "Your New Login OTP",
         html: emailTemplate(otp),
     });
-    // 6. Frontend ke liye NAYA verificationId generate karein
-    const newVerificationId = jwt.sign({ email: email }, process.env.JWT_SECRET, { expiresIn: "5m" });
+    // Generate new verificationId
+    const newVerificationId = jwt.sign({ email }, process.env.JWT_SECRET, {
+        expiresIn: "5m",
+    });
     return res.status(200).json({
         success: true,
         message: "OTP resent successfully.",

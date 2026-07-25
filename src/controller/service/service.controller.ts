@@ -12,6 +12,11 @@ import ServiceModel from "../../modules/service/service.model.js";
 
 import { TryCatch } from "../../config/TryCatch.js";
 
+
+
+
+
+
 export interface CreateServiceDto {
   category: string;
   title: string;
@@ -50,6 +55,17 @@ export const createService = async (
       res.status(400).json({
         success: false,
         message: "Service image is required.",
+      });
+      return;
+    }
+const titleExists = await Service.findOne({
+  title: title.trim(),
+});
+
+    if(titleExists){
+      res.status(400).json({
+        success: false,
+        message: "Service  already exists.",
       });
       return;
     }
@@ -267,11 +283,19 @@ export const updateService = async (
 
 
 export const deleteService = async (
-  req: Request<ServiceParams>,
+  req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
+    const { id } = req.params as { id?: string };
+
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        message: "Service id is required.",
+      });
+      return;
+    }
 
     // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {

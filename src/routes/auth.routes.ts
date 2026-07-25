@@ -20,7 +20,7 @@ UserRouter.post(
 
 
 UserRouter.post("/verify-otp", VerifyLoginOtp);
-UserRouter.post("/resend-otp", VerifyOtp);
+UserRouter.post("/resend-otp", ResendOtp);
 
 UserRouter.get("/profile/:id", profileGet);
 UserRouter.put(

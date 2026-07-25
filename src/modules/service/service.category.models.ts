@@ -1,6 +1,6 @@
 import { Schema, model ,Document} from "mongoose";
 
-
+import Service from "./service.model.js";
 
 
 export interface IServiceCategory extends Document {
@@ -34,6 +34,25 @@ const ServiceCategorySchema = new Schema<IServiceCategory>(
     versionKey: false,
   }
 );
+
+
+ServiceCategorySchema.pre("findOneAndDelete", async function () {
+  const category = await this.model.findOne(this.getFilter());
+
+  if (category) {
+    await Service.deleteMany({
+      category: category._id,
+    });
+  }
+});ServiceCategorySchema.pre("findOneAndDelete", async function () {
+  const category = await this.model.findOne(this.getFilter());
+
+  if (category) {
+    await Service.deleteMany({
+      category: category._id,
+    });
+  }
+});
 
 export default model<IServiceCategory>(
   "ServiceCategory",
