@@ -13,16 +13,64 @@ import {
   deleteImage,
 } from "../../config/imageUploader.js";
 import type { AuthenticationRequest } from "../../middleware/isAuth.js";
+import { sendEmail } from "../../config/email.js";
 
 interface LoginBody {
   email: string;
   password: string;
 }
 
+// export const Login = TryCatch(
+//   async (req: Request<{}, {}, LoginBody>, res: Response) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Email and Password are required.",
+//       });
+//     }
+
+//     const user = await UserModel.findOne({ email });
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found." });
+//     }
+
+//     const isMatch = await bcrypt.compare(password.toString(), user.password.toString());
+//     if (!isMatch) {
+//       return res.status(401).json({ success: false, message: "Invalid email or password." });
+//     }
+
+//     // Generate OTP & save in Redis
+//     const otp = generateOTP();
+//     await storeOTP(user.email, otp);
+
+//     // Temporary token (verification ke waqt use hoga agar chaho)
+//     const verificationId = jwt.sign(
+//       { email: user.email },
+//       process.env.JWT_SECRET!,
+//       { expiresIn: "5m" }
+//     );
+
+//     // Publish to RabbitMQ -> worker email bhejega
+//     await publishEmail({
+//       to: user.email,
+//       subject: "Login OTP Verification",
+//       html: emailTemplate(otp),
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "OTP sent successfully.",
+//       verificationId,
+//     });
+//   }
+// );
 export const Login = TryCatch(
   async (req: Request<{}, {}, LoginBody>, res: Response) => {
     const { email, password } = req.body;
 
+    // Validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -30,33 +78,52 @@ export const Login = TryCatch(
       });
     }
 
+    // Find User
     const user = await UserModel.findOne({ email });
+
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
     }
 
-    const isMatch = await bcrypt.compare(password.toString(), user.password.toString());
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid email or password." });
-    }
-
-    // Generate OTP & save in Redis
-    const otp = generateOTP();
-    await storeOTP(user.email, otp);
-
-    // Temporary token (verification ke waqt use hoga agar chaho)
-    const verificationId = jwt.sign(
-      { email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "5m" }
+    // Compare Password
+    const isMatch = await bcrypt.compare(
+      password.toString(),
+      user.password.toString()
     );
 
-    // Publish to RabbitMQ -> worker email bhejega
-    await publishEmail({
-      to: user.email,
-      subject: "Login OTP Verification",
-      html: emailTemplate(otp),
-    });
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Store OTP in Redis (5 minutes)
+    await storeOTP(user.email, otp);
+
+    // Send OTP Email Directly
+    await sendEmail(
+      user.email,
+      "Login OTP Verification",
+      emailTemplate(otp)
+    );
+
+    // Generate Temporary Verification Token
+    const verificationId = jwt.sign(
+      {
+        email: user.email,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "5m",
+      }
+    );
 
     return res.status(200).json({
       success: true,
@@ -65,7 +132,6 @@ export const Login = TryCatch(
     });
   }
 );
-
 interface VerifyBody {
   email: string;
   otp: string;
