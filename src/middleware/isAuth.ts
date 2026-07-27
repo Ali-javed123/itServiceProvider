@@ -1,37 +1,4 @@
-// import type { Request,NextFunction, Response } from "express"
-// import jwt, { type JwtPayload } from "jsonwebtoken";
-// export interface User extends Document{
-//     _id:number,
-//     nama:string
-//     email:string
-// }
-// export interface AuthenticationRequest extends Request{
-// user?:User |null
-// }
-
-
-// export const isAuth=async(req:AuthenticationRequest | any,res:Response,next:NextFunction)=>{
-//     try {
-//         const authHeader=req.headers.authorization;
-//                 console.log("Authorization Header:", req.headers.authorization);
-
-//         if(!authHeader || !authHeader.startsWith("Bearer ")){
-//             res.status(401).json({message:"unauthorized please login"}) 
-            
-//         }
-//         const token=authHeader.split(" ")[1] as any;
-//         const decodedValue=jwt.verify(token,process.env.JWT_SECRET as string ) as JwtPayload;
-//         if(!decodedValue || !decodedValue.user){
-//             res.status(401).json({message:"Invalid token"}) 
-//         }
-//         req.user=decodedValue.user;
-//         next();
-
-// }catch (error) {
-//     res.status(401).json({message:"unauthorized please login"})
-// }
-// }
-
+// middleware/isAuth.ts
 import type { Request, Response, NextFunction } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
@@ -46,34 +13,73 @@ export const isAuth = (
   req: AuthenticationRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {  // ✅ void return type
   try {
     const authHeader = req.headers.authorization;
 
+    console.log("🔐 Auth Header:", authHeader); // Debug log
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         message: "Unauthorized. Please login.",
       });
+      return;
     }
 
     const token = authHeader.split(" ")[1];
 
+    if (!token) {
+      res.status(401).json({
+        success: false,
+        message: "Token is required.",
+      });
+      return;
+    }
+
     const decoded = jwt.verify(
-      token as string,
-      process.env.JWT_SECRET!
+      token,
+      process.env.JWT_SECRET || "your-secret-key"
     ) as JwtPayload;
+
+    if (!decoded || !decoded.id) {
+      res.status(401).json({
+        success: false,
+        message: "Invalid token payload.",
+      });
+      return;
+    }
 
     req.user = {
       id: decoded.id,
-      email: decoded.email,
+      email: decoded.email || "",
     };
 
+    console.log("✅ User authenticated:", req.user); // Debug log
     next();
-  } catch (error) {
-    return res.status(401).json({
+  } catch (error: any) {
+    console.error("❌ Auth Error:", error.message);
+    
+    // ✅ Specific error messages
+    if (error.name === 'TokenExpiredError') {
+      res.status(401).json({
+        success: false,
+        message: "Token has expired. Please login again.",
+      });
+      return;
+    }
+    
+    if (error.name === 'JsonWebTokenError') {
+      res.status(401).json({
+        success: false,
+        message: "Invalid token. Please login again.",
+      });
+      return;
+    }
+
+    res.status(401).json({
       success: false,
-      message: "Invalid or expired token.",
+      message: "Authentication failed. Please login.",
     });
   }
 };

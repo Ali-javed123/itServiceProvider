@@ -9,6 +9,7 @@ import { isAuth } from "../middleware/isAuth.js";
 
 const ServiceRouter = Router();
 
+
 ServiceRouter.post("/service-category", isAuth, createServiceCategory);
 ServiceRouter.get("/service-category", isAuth, getServiceCategories);
 ServiceRouter.delete("/service-category/:id", isAuth, deleteCategoryService);
@@ -19,7 +20,7 @@ ServiceRouter.post(
   upload.single("image"),
   createService
 );
-ServiceRouter.get("/service", isAuth, GetService);
+ServiceRouter.get("/service", GetService);
 
 ServiceRouter.put(
   "/service/:id",

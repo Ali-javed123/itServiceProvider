@@ -9,3 +9,10 @@ export interface CreateServiceCategoryDto {
 export   interface UpdateServiceCategoryDto {
   serviceCategory: string;
 }
+
+
+
+
+
+
+
