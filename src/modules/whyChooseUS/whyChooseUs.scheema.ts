@@ -17,7 +17,7 @@ export interface IChooseUs extends Document {
         public_id: string;
     };
    
-    featured: Feature;
+    featured: Feature[];
     subHeading: string;
     btnText: string;    
 }
@@ -75,7 +75,7 @@ btnText: {
     trim: true,
 },
         featured: {
-            type: FeatureSchema,
+            type: [FeatureSchema],
             required: true,
         },
 

@@ -8,6 +8,7 @@ import { UserRoutes } from "./routes/auth.routes.js";
 import ServiceRouter from "./routes/service.route.js";
 import AboutRouter from "./routes/about.route.js";
 import HomeBannerouter from "./routes/homeBanner.route.js";
+import  WhyChooseUsRouter  from "./routes/chooseus.route.js";
 dotenv.config();
 
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
@@ -35,6 +36,7 @@ app.use("/api/v1/auth", UserRoutes);
 app.use("/api/v1", ServiceRouter);
 app.use("/api/v1", AboutRouter);
 app.use("/api/v1", HomeBannerouter);
+app.use("/api/v1", WhyChooseUsRouter);
 
 
 
