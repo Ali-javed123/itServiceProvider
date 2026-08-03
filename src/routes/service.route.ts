@@ -4,14 +4,13 @@ import {
   getServiceCategories, 
   deleteCategoryService,
   updateServiceCategory,
-  getCategoryById,
-  getCategoryBySlug
-} from '../controller/service/service-category.controller.js';
+  
+} from '../controller/serviceCategory/service-category.controller.js';
 
 import { Router } from "express";
 import { createService } from '../controller/service/service.controller.js';
 import { upload } from "../config/multer.js";
-import { updateService, deleteService, GetService } from '../controller/service/service.controller.js';
+import { updateController, deleteController, GetService } from '../controller/service/service.controller.js';
 import { isAuth } from "../middleware/isAuth.js";
 
 import { 
@@ -56,28 +55,10 @@ ServiceRouter.get(
 );
 
 // Get category by ID
-ServiceRouter.get(
-  "/service-category/:id",
-  isAuth,
-  validate({
-    params: z.object({
-      id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid MongoDB ObjectId')
-    })
-  }),
-  getCategoryById
-);
+
 
 // Get category by slug
-ServiceRouter.get(
-  "/service-category/slug/:slug",
-  isAuth,
-  validate({
-    params: z.object({
-      slug: z.string().trim().min(1)
-    })
-  }),
-  getCategoryBySlug
-);
+
 
 // Update category
 ServiceRouter.put(
@@ -133,7 +114,7 @@ ServiceRouter.put(
     maxSize: 5 * 1024 * 1024,
     required: false,
   }),
-  updateService
+  updateController
 );
 
 ServiceRouter.delete(
@@ -141,7 +122,7 @@ ServiceRouter.delete(
   validate({
     params: commonSchemas.idParam
   }),
-  deleteService
+  deleteController
 );
 
 export default ServiceRouter;

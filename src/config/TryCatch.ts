@@ -14,7 +14,7 @@ export const TryCatch = (handler: RequestHandler): RequestHandler => {
     try {
       await handler(req, res, next);
     } catch (error: any) {
-      console.error(error);
+      console.warn(error);
 
       res.status(500).json({
         success: false,

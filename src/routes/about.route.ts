@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPage ,updatePage,deletePage,getAllPages,getPageById} from "../controller/service/aboutus.controller.js";
+import { createPage ,updatePage,deletePage,getAllPages,getPageById} from "../controller/about/aboutus.controller.js";
 import { upload } from "../config/multer.js";
 import { isAuth } from "../middleware/isAuth.js";
 

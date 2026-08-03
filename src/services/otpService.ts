@@ -41,7 +41,7 @@ export async function verifyOTP(
   }
 
   // OTP match ho gaya -> delete
-  await RedisService.remove(key);
+  await RedisService.deleteCache(key);
 
   return true;
 }
